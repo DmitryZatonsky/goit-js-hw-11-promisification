@@ -2,24 +2,29 @@ const randomIntegerFromInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const makeTransaction = (transaction, onSuccess, onError) => {
+const makeTransaction = transaction => {
   const delay = randomIntegerFromInterval(200, 500);
+
   const promise = new Promise((resolve, reject) => { 
     setTimeout(() => {
       const canProcess = Math.random() > 0.3;
-      resolve(transaction.id, delay)
-      reject(transaction.id)
+      const transactionId = transaction.id
+      if (canProcess) {
+        resolve({ transactionId, delay })
+      } else {
+        reject(transactionId);
+      }
     }, delay);
   })
   return promise;
 };
 
-const logSuccess = (id, time) => {
-  console.log(`Transaction ${id} processed in ${time}ms`);
+const logSuccess = ({transactionId, delay}) => {
+  console.log(`Transaction ${transactionId} processed in ${delay}ms`);
 };
 
-const logError = id => {
-  console.warn(`Error processing transaction ${id}. Please try again later.`);
+const logError = transactionId => {
+  console.warn(`Error processing transaction ${transactionId}. Please try again later.`);
 };
 
 /*
@@ -32,6 +37,7 @@ const logError = id => {
 /*
  * Должно работать так
  */
+
 makeTransaction({ id: 70, amount: 150 })
   .then(logSuccess)
   .catch(logError);
